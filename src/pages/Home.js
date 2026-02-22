@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Grid, Card, Typography, Container, Box, 
-  AppBar, Toolbar, IconButton, Stack, Select, MenuItem, FormControl 
+  AppBar, Toolbar, IconButton, Stack, Select, MenuItem, FormControl, Button, Menu
 } from '@mui/material';
 import { 
   FlashOn, WaterDrop, LocalGasStation, Business, 
-  Contrast, HeadsetMic, Security, FiberManualRecord, Language 
+  Contrast, HeadsetMic, Security, FiberManualRecord, Language,
+  KeyboardArrowDown, AutoGraph, Description, 
+  Campaign, Assessment, BugReport, SupportAgent, Troubleshoot, QueryStats
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
@@ -16,25 +18,33 @@ const services = [
   { id: 'property', title: 'PROPERTY_TAX', sub: 'PROCEED_PAYMENT', icon: <Business sx={{ fontSize: 40 }} />, color: '#4caf50' },
 ];
 
-// List of major Indian languages for the dropdown
-const indianLanguages = [
-  { code: 'en', label: 'English' },
+const top10IndianLanguages = [
   { code: 'hi', label: 'हिन्दी (Hindi)' },
-  { code: 'mr', label: 'मराठी (Marathi)' },
   { code: 'bn', label: 'বাংলা (Bengali)' },
-  { code: 'ta', label: 'தமிழ் (Tamil)' },
+  { code: 'mr', label: 'मराठी (Marathi)' },
   { code: 'te', label: 'తెలుగు (Telugu)' },
+  { code: 'ta', label: 'தமிழ் (Tamil)' },
   { code: 'gu', label: 'ગુજરાતી (Gujarati)' },
+  { code: 'ur', label: 'اردو (Urdu)' },
   { code: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
+  { code: 'or', label: 'ଓଡ଼ିଆ (Odia)' },
   { code: 'ml', label: 'മലയാളം (Malayalam)' },
-  { code: 'pa', label: 'ਪੰਜਾਬੀ (Punjabi)' }
+  { code: 'en', label: 'English' }
 ];
 
 const Home = ({ toggleTheme }) => {
   const { t, i18n } = useTranslation();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [activeMenu, setActiveMenu] = useState(null);
 
-  const handleLanguageChange = (event) => {
-    i18n.changeLanguage(event.target.value);
+  const handleOpen = (event, menu) => {
+    setAnchorEl(event.currentTarget);
+    setActiveMenu(menu);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setActiveMenu(null);
   };
 
   return (
@@ -47,60 +57,69 @@ const Home = ({ toggleTheme }) => {
               <Business sx={{ color: 'white' }} />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: 'primary.main', letterSpacing: 1 }}>SUVIDHA ONETOUCH</Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>{t('UNIFIED_PLATFORM')} • डिजिटल इंडिया</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 800, color: 'primary.main', lineHeight: 1 }}>SUVIDHA ONETOUCH</Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>UNIFIED CIVIC SERVICES PLATFORM</Typography>
             </Box>
           </Stack>
 
+          <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Button color="inherit" endIcon={<KeyboardArrowDown />} onClick={(e) => handleOpen(e, 'civic')}>Civic Services</Button>
+            <Button color="inherit" endIcon={<KeyboardArrowDown />} onClick={(e) => handleOpen(e, 'ai')}>AI Tools</Button>
+            <Button color="inherit" endIcon={<KeyboardArrowDown />} onClick={(e) => handleOpen(e, 'gov')}>Governance</Button>
+          </Stack>
+
           <Stack direction="row" spacing={2} alignItems="center">
-            {/* Language Dropdown Selector */}
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <Select
-                value={i18n.language || 'en'}
-                onChange={handleLanguageChange}
-                displayEmpty
-                startAdornment={<Language sx={{ mr: 1, fontSize: 20, color: 'primary.main' }} />}
-                sx={{ borderRadius: 2, fontSize: '0.875rem', fontWeight: 600 }}
+            <FormControl size="small" sx={{ minWidth: 160 }}>
+              <Select 
+                value={i18n.language || 'en'} 
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                startAdornment={<Language sx={{ mr: 1, fontSize: 18, color: 'primary.main' }} />}
+                sx={{ borderRadius: 2, fontWeight: 600 }}
               >
-                {indianLanguages.map((lang) => (
-                  <MenuItem key={lang.code} value={lang.code}>
-                    {lang.label}
-                  </MenuItem>
+                {top10IndianLanguages.map((lang) => (
+                  <MenuItem key={lang.code} value={lang.code}>{lang.label}</MenuItem>
                 ))}
               </Select>
             </FormControl>
-
-            <IconButton onClick={toggleTheme} sx={{ ml: 1 }}>
-              <Contrast />
-            </IconButton>
+            <IconButton onClick={toggleTheme}><Contrast /></IconButton>
           </Stack>
         </Toolbar>
       </AppBar>
+
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} PaperProps={{ sx: { minWidth: 280, borderRadius: 3, mt: 1 } }}>
+        {activeMenu === 'civic' && [
+          <MenuItem key="bill" onClick={handleClose}><FlashOn sx={{ mr: 2 }} /> Billing Services</MenuItem>,
+          <MenuItem key="req" onClick={handleClose}><Troubleshoot sx={{ mr: 2 }} /> Service Requests</MenuItem>,
+          <MenuItem key="griv" onClick={handleClose}><Campaign sx={{ mr: 2 }} /> Grievance Services</MenuItem>,
+          <MenuItem key="notif" onClick={handleClose}><FiberManualRecord sx={{ mr: 2, color: 'success.main' }} /> Notification Service</MenuItem>
+        ]}
+        {activeMenu === 'ai' && [
+          <MenuItem key="conc" onClick={handleClose}><SupportAgent sx={{ mr: 2 }} /> AI Civic Concierge (NLP)</MenuItem>,
+          <MenuItem key="fault" onClick={handleClose}><BugReport sx={{ mr: 2 }} /> Visual Fault Detection</MenuItem>,
+          <MenuItem key="ocr" onClick={handleClose}><Description sx={{ mr: 2 }} /> Intelligent Document Processing</MenuItem>
+        ]}
+        {activeMenu === 'gov' && [
+          <MenuItem key="admin" onClick={handleClose}><Assessment sx={{ mr: 2 }} /> Admin & Analytics</MenuItem>,
+          <MenuItem key="pred" onClick={handleClose}><QueryStats sx={{ mr: 2 }} /> Predictive Analytics</MenuItem>,
+          <MenuItem key="route" onClick={handleClose}><AutoGraph sx={{ mr: 2 }} /> Smart Routing</MenuItem>
+        ]}
+      </Menu>
 
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ bgcolor: 'background.paper', p: 5, borderRadius: 6, boxShadow: '0 10px 30px rgba(0,0,0,0.04)', mb: 4 }}>
           <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', color: 'primary.main', fontWeight: 'bold', mb: 2 }}>
             <Security sx={{ fontSize: 16, mr: 1 }} /> AZADI KA AMRIT MAHOTSAV
           </Typography>
-          
           <Grid container alignItems="center">
             <Grid item xs={12} md={8}>
-              <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary', mb: 2 }}>
-                {t('WELCOME_TITLE')}
-              </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: '500px', lineHeight: 1.6 }}>
-                {t('WELCOME_SUBTITLE')}
+              <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary', mb: 2 }}>Welcome to SUVIDHA <br/> OneTouch</Typography>
+              <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: '500px' }}>
+                Access to municipal and utility services under the Digital India initiative. Please select a service to begin.
               </Typography>
             </Grid>
-            
-            <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: 'center', mt: { xs: 4, md: 0 } }}>
-              <Box textAlign="center">
-                <Box component="img" 
-                  src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Digital_India_logo.svg/1200px-Digital_India_logo.svg.png" 
-                  sx={{ height: 100 }} 
-                />
-                <Typography variant="caption" display="block" sx={{ fontWeight: 'bold', mt: 1 }}>POWER TO EMPOWER</Typography>
-              </Box>
+            <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
+              <Box component="img" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Digital_India_logo.svg/1200px-Digital_India_logo.svg.png" sx={{ height: 100 }} />
+              <Typography variant="caption" display="block" sx={{ fontWeight: 'bold' }}>POWER TO EMPOWER</Typography>
             </Grid>
           </Grid>
         </Box>
@@ -108,17 +127,11 @@ const Home = ({ toggleTheme }) => {
         <Grid container spacing={3}>
           {services.map((s) => (
             <Grid item xs={12} sm={6} md={3} key={s.id}>
-              <Card sx={{ 
-                p: 3, borderRadius: 5, cursor: 'pointer', transition: '0.3s', bgcolor: 'background.paper',
-                '&:hover': { transform: 'translateY(-8px)', boxShadow: 4 }
-              }}>
-                <Box sx={{ 
-                  bgcolor: `${s.color}20`, width: 56, height: 56, borderRadius: 3, 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4, color: s.color 
-                }}>
+              <Card sx={{ p: 3, borderRadius: 5, cursor: 'pointer', transition: '0.3s', '&:hover': { transform: 'translateY(-8px)', boxShadow: 4 } }}>
+                <Box sx={{ bgcolor: `${s.color}20`, width: 56, height: 56, borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4, color: s.color }}>
                   {s.icon}
                 </Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary' }}>{t(s.title)}</Typography>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>{t(s.title)}</Typography>
                 <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold' }}>{t(s.sub)}</Typography>
               </Card>
             </Grid>
@@ -128,17 +141,12 @@ const Home = ({ toggleTheme }) => {
 
       <Box sx={{ mt: 'auto', bgcolor: 'background.paper', p: 1.5, display: 'flex', justifyContent: 'space-between', borderTop: '1px solid', borderColor: 'divider' }}>
         <Stack direction="row" spacing={4} sx={{ ml: 2 }}>
-          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary', fontWeight: 600 }}>
-            <FiberManualRecord sx={{ color: '#4caf50', fontSize: 12, mr: 0.5 }} /> KIOSK STATUS: ACTIVE
-          </Typography>
-          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary', fontWeight: 600 }}>
-            <Security sx={{ fontSize: 14, mr: 0.5 }} /> SECURE CONNECTION
-          </Typography>
+          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}><FiberManualRecord sx={{ color: '#4caf50', fontSize: 12, mr: 0.5 }} /> KIOSK STATUS: ACTIVE</Typography>
+          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}><Security sx={{ fontSize: 14, mr: 0.5 }} /> SECURE CONNECTION</Typography>
         </Stack>
-
         <Stack direction="row" spacing={3} alignItems="center" sx={{ mr: 2 }}>
           <Box textAlign="right">
-            <Typography variant="caption" sx={{ display: 'block', lineHeight: 1, color: 'text.secondary' }}>SESSION SECURITY TIMEOUT</Typography>
+            <Typography variant="caption" sx={{ display: 'block', lineHeight: 1 }}>SESSION SECURITY TIMEOUT</Typography>
             <Typography variant="subtitle2" sx={{ fontWeight: 900, color: 'primary.main' }}>04:42</Typography>
           </Box>
           <IconButton sx={{ bgcolor: 'action.hover' }}><HeadsetMic sx={{ color: 'primary.main' }} /></IconButton>

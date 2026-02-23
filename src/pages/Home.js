@@ -1,41 +1,66 @@
 import React, { useState } from 'react';
 import { 
   Grid, Card, Typography, Container, Box, 
-  AppBar, Toolbar, IconButton, Stack, Select, MenuItem, FormControl, Button, Menu
+  AppBar, Toolbar, IconButton, Stack, Select, MenuItem, FormControl, Button, Menu, Tooltip
 } from '@mui/material';
 import { 
   FlashOn, WaterDrop, LocalGasStation, Business, 
-  Contrast, HeadsetMic, Security, FiberManualRecord, Language,
+  Visibility, HeadsetMic, Security, FiberManualRecord, Language,
   KeyboardArrowDown, AutoGraph, Description, 
   Campaign, Assessment, BugReport, SupportAgent, Troubleshoot, QueryStats
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
-const services = [
-  { id: 'elec', title: 'ELECTRICITY_BILL', sub: 'PROCEED_PAYMENT', icon: <FlashOn sx={{ fontSize: 40 }} />, color: '#ff9800' },
-  { id: 'water', title: 'WATER_TAX', sub: 'PROCEED_PAYMENT', icon: <WaterDrop sx={{ fontSize: 40 }} />, color: '#2196f3' },
-  { id: 'gas', title: 'GAS_CONNECTION', sub: 'PROCEED_PAYMENT', icon: <LocalGasStation sx={{ fontSize: 40 }} />, color: '#ff5722' },
-  { id: 'property', title: 'PROPERTY_TAX', sub: 'PROCEED_PAYMENT', icon: <Business sx={{ fontSize: 40 }} />, color: '#4caf50' },
-];
-
-const top10IndianLanguages = [
-  { code: 'hi', label: 'हिन्दी (Hindi)' },
-  { code: 'bn', label: 'বাংলা (Bengali)' },
-  { code: 'mr', label: 'मराठी (Marathi)' },
-  { code: 'te', label: 'తెలుగు (Telugu)' },
-  { code: 'ta', label: 'தமிழ் (Tamil)' },
-  { code: 'gu', label: 'ગુજરાતી (Gujarati)' },
-  { code: 'ur', label: 'اردو (Urdu)' },
-  { code: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
-  { code: 'or', label: 'ଓଡ଼ିଆ (Odia)' },
-  { code: 'ml', label: 'മലയാളം (Malayalam)' },
-  { code: 'en', label: 'English' }
-];
-
-const Home = ({ toggleTheme }) => {
+const Home = ({ toggleColorblind, isColorblind }) => {
   const { t, i18n } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
+
+  // Dynamic services array that reacts to the isColorblind state
+  const services = [
+    { 
+      id: 'elec', 
+      title: 'ELECTRICITY_BILL', 
+      sub: 'PROCEED_PAYMENT', 
+      icon: <FlashOn sx={{ fontSize: 40 }} />, 
+      color: isColorblind ? '#005AB5' : '#ff9800' 
+    },
+    { 
+      id: 'water', 
+      title: 'WATER_TAX', 
+      sub: 'PROCEED_PAYMENT', 
+      icon: <WaterDrop sx={{ fontSize: 40 }} />, 
+      color: isColorblind ? '#2196f3' : '#2196f3' // Adjust if specific high-contrast needed
+    },
+    { 
+      id: 'gas', 
+      title: 'GAS_CONNECTION', 
+      sub: 'PROCEED_PAYMENT', 
+      icon: <LocalGasStation sx={{ fontSize: 40 }} />, 
+      color: isColorblind ? '#DC3220' : '#ff5722' 
+    },
+    { 
+      id: 'property', 
+      title: 'PROPERTY_TAX', 
+      sub: 'PROCEED_PAYMENT', 
+      icon: <Business sx={{ fontSize: 40 }} />, 
+      color: isColorblind ? '#40B0A6' : '#4caf50' 
+    },
+  ];
+
+  const top10IndianLanguages = [
+    { code: 'hi', label: 'हिन्दी (Hindi)' },
+    { code: 'bn', label: 'বাংলা (Bengali)' },
+    { code: 'mr', label: 'मराठी (Marathi)' },
+    { code: 'te', label: 'తెలుగు (Telugu)' },
+    { code: 'ta', label: 'தமிழ் (Tamil)' },
+    { code: 'gu', label: 'ગુજરાતી (Gujarati)' },
+    { code: 'ur', label: 'اردو (Urdu)' },
+    { code: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
+    { code: 'or', label: 'ଓଡ଼ିଆ (Odia)' },
+    { code: 'ml', label: 'മലയാളം (Malayalam)' },
+    { code: 'en', label: 'English' }
+  ];
 
   const handleOpen = (event, menu) => {
     setAnchorEl(event.currentTarget);
@@ -50,6 +75,7 @@ const Home = ({ toggleTheme }) => {
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column', transition: '0.3s' }}>
       
+      {/* Navigation Header */}
       <AppBar position="static" sx={{ bgcolor: 'background.paper', color: 'text.primary', boxShadow: 'none', borderBottom: '1px solid', borderColor: 'divider' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Stack direction="row" spacing={2} alignItems="center">
@@ -58,7 +84,7 @@ const Home = ({ toggleTheme }) => {
             </Box>
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 800, color: 'primary.main', lineHeight: 1 }}>SUVIDHA ONETOUCH</Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>UNIFIED CIVIC SERVICES PLATFORM</Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>{t('UNIFIED_PLATFORM')}</Typography>
             </Box>
           </Stack>
 
@@ -81,11 +107,16 @@ const Home = ({ toggleTheme }) => {
                 ))}
               </Select>
             </FormControl>
-            <IconButton onClick={toggleTheme}><Contrast /></IconButton>
+            <Tooltip title="Toggle Colourblind Mode">
+              <IconButton onClick={toggleColorblind} color={isColorblind ? "secondary" : "primary"}>
+                <Visibility />
+              </IconButton>
+            </Tooltip>
           </Stack>
         </Toolbar>
       </AppBar>
 
+      {/* Dropdown Menus */}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} PaperProps={{ sx: { minWidth: 280, borderRadius: 3, mt: 1 } }}>
         {activeMenu === 'civic' && [
           <MenuItem key="bill" onClick={handleClose}><FlashOn sx={{ mr: 2 }} /> Billing Services</MenuItem>,
@@ -112,9 +143,9 @@ const Home = ({ toggleTheme }) => {
           </Typography>
           <Grid container alignItems="center">
             <Grid item xs={12} md={8}>
-              <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary', mb: 2 }}>Welcome to SUVIDHA <br/> OneTouch</Typography>
+              <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary', mb: 2 }}>{t('WELCOME_TITLE')}</Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: '500px' }}>
-                Access to municipal and utility services under the Digital India initiative. Please select a service to begin.
+                {t('WELCOME_SUBTITLE')}
               </Typography>
             </Grid>
             <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
@@ -139,6 +170,7 @@ const Home = ({ toggleTheme }) => {
         </Grid>
       </Container>
 
+      {/* Status Footer */}
       <Box sx={{ mt: 'auto', bgcolor: 'background.paper', p: 1.5, display: 'flex', justifyContent: 'space-between', borderTop: '1px solid', borderColor: 'divider' }}>
         <Stack direction="row" spacing={4} sx={{ ml: 2 }}>
           <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}><FiberManualRecord sx={{ color: '#4caf50', fontSize: 12, mr: 0.5 }} /> KIOSK STATUS: ACTIVE</Typography>

@@ -10,13 +10,14 @@ import {
   Campaign, Assessment, BugReport, SupportAgent, Troubleshoot, QueryStats
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom'; // 1. Added Import
 
 const Home = ({ toggleColorblind, isColorblind }) => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate(); // 2. Defined navigate
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
 
-  // Dynamic services array that reacts to the isColorblind state
   const services = [
     { 
       id: 'elec', 
@@ -30,7 +31,7 @@ const Home = ({ toggleColorblind, isColorblind }) => {
       title: 'WATER_TAX', 
       sub: 'PROCEED_PAYMENT', 
       icon: <WaterDrop sx={{ fontSize: 40 }} />, 
-      color: isColorblind ? '#2196f3' : '#2196f3' // Adjust if specific high-contrast needed
+      color: isColorblind ? '#2196f3' : '#2196f3' 
     },
     { 
       id: 'gas', 
@@ -75,7 +76,6 @@ const Home = ({ toggleColorblind, isColorblind }) => {
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column', transition: '0.3s' }}>
       
-      {/* Navigation Header */}
       <AppBar position="static" sx={{ bgcolor: 'background.paper', color: 'text.primary', boxShadow: 'none', borderBottom: '1px solid', borderColor: 'divider' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Stack direction="row" spacing={2} alignItems="center">
@@ -90,6 +90,7 @@ const Home = ({ toggleColorblind, isColorblind }) => {
 
           <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button color="inherit" endIcon={<KeyboardArrowDown />} onClick={(e) => handleOpen(e, 'civic')}>Civic Services</Button>
+            {/* Removed the misplaced MenuItem from here */}
             <Button color="inherit" endIcon={<KeyboardArrowDown />} onClick={(e) => handleOpen(e, 'ai')}>AI Tools</Button>
             <Button color="inherit" endIcon={<KeyboardArrowDown />} onClick={(e) => handleOpen(e, 'gov')}>Governance</Button>
           </Stack>
@@ -116,12 +117,11 @@ const Home = ({ toggleColorblind, isColorblind }) => {
         </Toolbar>
       </AppBar>
 
-      {/* Dropdown Menus */}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} PaperProps={{ sx: { minWidth: 280, borderRadius: 3, mt: 1 } }}>
         {activeMenu === 'civic' && [
           <MenuItem key="bill" onClick={handleClose}><FlashOn sx={{ mr: 2 }} /> Billing Services</MenuItem>,
           <MenuItem key="req" onClick={handleClose}><Troubleshoot sx={{ mr: 2 }} /> Service Requests</MenuItem>,
-          <MenuItem key="griv" onClick={handleClose}><Campaign sx={{ mr: 2 }} /> Grievance Services</MenuItem>,
+          <MenuItem key="griv" onClick={() => { handleClose(); navigate('/grievance'); }}><Campaign sx={{ mr: 2 }} /> Grievance Services</MenuItem>,
           <MenuItem key="notif" onClick={handleClose}><FiberManualRecord sx={{ mr: 2, color: 'success.main' }} /> Notification Service</MenuItem>
         ]}
         {activeMenu === 'ai' && [
@@ -143,7 +143,7 @@ const Home = ({ toggleColorblind, isColorblind }) => {
           </Typography>
           <Grid container alignItems="center">
             <Grid item xs={12} md={8}>
-              <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary', mb: 2 }}>{t('WELCOME_TITLE')}</Typography>
+              <Typography variant="h2" sx={{ fontWeight: 900, color: 'text.primary', mb: 2 }}>Welcome to SUVIDHA <br/> OneTouch</Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: '500px' }}>
                 {t('WELCOME_SUBTITLE')}
               </Typography>
@@ -170,7 +170,6 @@ const Home = ({ toggleColorblind, isColorblind }) => {
         </Grid>
       </Container>
 
-      {/* Status Footer */}
       <Box sx={{ mt: 'auto', bgcolor: 'background.paper', p: 1.5, display: 'flex', justifyContent: 'space-between', borderTop: '1px solid', borderColor: 'divider' }}>
         <Stack direction="row" spacing={4} sx={{ ml: 2 }}>
           <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}><FiberManualRecord sx={{ color: '#4caf50', fontSize: 12, mr: 0.5 }} /> KIOSK STATUS: ACTIVE</Typography>
